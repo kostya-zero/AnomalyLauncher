@@ -1,0 +1,5 @@
+renderer = "DX11"
+use_avx = true
+shadow_map = "Size1536"
+debug = true
+prefetch_sounds = false
