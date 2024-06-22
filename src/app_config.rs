@@ -28,6 +28,12 @@ pub struct AppConfig {
     pub prefetch_sounds: bool,
 }
 
+pub enum AppConfigError {
+    ReadFailed,
+    BadStructure,
+    WriteFailed,
+}
+
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
@@ -41,13 +47,23 @@ impl Default for AppConfig {
 }
 
 impl AppConfig {
-    pub fn load() -> Self {
-        let file_data = fs::read_to_string("launcherconfig.toml").unwrap();
-        toml::from_str::<AppConfig>(&file_data).unwrap()
+    pub fn load() -> Result<Self, AppConfigError> {
+        if let Ok(file_data) = fs::read_to_string("launcherconfig.toml") {
+            if let Ok(config) = toml::from_str::<AppConfig>(&file_data) {
+                Ok(config)
+            } else {
+                Err(AppConfigError::BadStructure)
+            }
+        } else {
+            Err(AppConfigError::ReadFailed)
+        }
     }
 
-    pub fn write(&self) {
+    pub fn write(&self) -> Result<(), AppConfigError> {
         let string_config = toml::to_string(self).unwrap();
-        fs::write("launcherconfig.toml", string_config).unwrap();
+        if fs::write("launcherconfig.toml", string_config).is_err() {
+            return Err(AppConfigError::WriteFailed);
+        }
+        Ok(())
     }
 }

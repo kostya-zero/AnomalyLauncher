@@ -3,7 +3,8 @@
 use std::{
     env, fmt, fs,
     path::{Path, PathBuf},
-    process::exit, sync::Arc,
+    process::exit,
+    sync::Arc,
 };
 
 mod app_config;
@@ -12,16 +13,26 @@ mod styles;
 
 use app_config::{AppConfig, Renderer, ShadowMapSize};
 use eframe::egui::{
-    self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, RichText, Stroke, Vec2, ViewportBuilder
+    self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, RichText,
+    Stroke, Vec2, ViewportBuilder,
 };
 use game::Game;
 use rfd::MessageDialog;
 use styles::Styles;
 
+fn show_error(title: &str, desc: &str) {
+    MessageDialog::new()
+        .set_title(title)
+        .set_description(desc)
+        .set_level(rfd::MessageLevel::Error)
+        .set_buttons(rfd::MessageButtons::Ok)
+        .show();
+}
+
 fn main() -> eframe::Result<()> {
     if !Path::new("launcherconfig.toml").exists() {
         let default_config = AppConfig::default();
-        default_config.write();
+        let _ = default_config.write();
     }
 
     let mut fonts = FontDefinitions::default();
@@ -37,14 +48,14 @@ fn main() -> eframe::Result<()> {
 
     let icon_data = include_bytes!("../assets/icon.ico");
 
-        let (icon_rgba, icon_width, icon_height) = {
-            let image = image::load_from_memory(icon_data)
-                .expect("Failed to open icon path")
-                .into_rgba8();
-            let (width, height) = image.dimensions();
-            let rgba = image.into_raw();
-            (rgba, width, height)
-        };
+    let (icon_rgba, icon_width, icon_height) = {
+        let image = image::load_from_memory(icon_data)
+            .expect("Failed to open icon path")
+            .into_rgba8();
+        let (width, height) = image.dimensions();
+        let rgba = image.into_raw();
+        (rgba, width, height)
+    };
     let arc_icon = Arc::new(IconData {
         rgba: icon_rgba,
         width: icon_width,
@@ -79,11 +90,15 @@ struct LauncherApp {
 
 impl LauncherApp {
     fn new(_cc: &eframe::CreationContext<'_>) -> Self {
-        let config = AppConfig::load();
-        LauncherApp {
-            config,
-            app_shutdown: false,
-        }
+        let config = AppConfig::load().unwrap_or_else(|err| {
+            match err {
+                app_config::AppConfigError::ReadFailed => show_error("Read Failed", "Failed to read the configuration file. Please remove 'launcherconfig.toml' and try to launch program again."),
+                app_config::AppConfigError::BadStructure => show_error("Bad configuration", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
+                app_config::AppConfigError::WriteFailed => todo!(),
+            };
+            exit(1);
+        });
+        LauncherApp { config , app_shutdown: false }
     }
 }
 
@@ -256,7 +271,10 @@ https://github.com/kostya-zero/AnomalyLauncher"#).show();
         }
 
         if self.app_shutdown {
-            self.config.write();
+            match self.config.write() {
+                Ok(_) => {},
+                Err(_) => show_error("Write Failed", "Failed to write data to configuration file. You might need to set your options again."),
+            };
             exit(0);
         }
     }

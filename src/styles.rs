@@ -1,4 +1,7 @@
-use eframe::egui::{style::{WidgetVisuals, Widgets}, Color32, Stroke, Visuals};
+use eframe::egui::{
+    style::{WidgetVisuals, Widgets},
+    Color32, Stroke, Visuals,
+};
 
 pub struct Styles;
 impl Styles {
