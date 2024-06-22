@@ -1,6 +1,6 @@
 # Anomaly Launcher
 
-Anomaly Launcher is a fast, minimalist, and modern launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above.
+Anomaly Launcher is a launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above.
 The primary objective of this project is to offer a swift and fresh launcher with useful features.
 
 ![Preview image of launcher](preview.png)
