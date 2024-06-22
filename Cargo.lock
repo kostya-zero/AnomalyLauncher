@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "AnomalyLauncher"
-version = "1.0.0"
+version = "1.0.0-rc1"
 dependencies = [
  "eframe",
  "image 0.25.1",

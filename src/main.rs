@@ -69,7 +69,7 @@ fn main() -> eframe::Result<()> {
         .with_icon(arc_icon);
 
     eframe::run_native(
-        "Anomaly Launcher v1.0.0",
+        "Anomaly Launcher v1.0.0-rc1",
         eframe::NativeOptions {
             viewport,
             vsync: false,
