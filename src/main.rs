@@ -13,8 +13,7 @@ mod styles;
 
 use app_config::{AppConfig, Renderer, ShadowMapSize};
 use eframe::egui::{
-    self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, RichText,
-    Stroke, Vec2, ViewportBuilder,
+    self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, Margin, RichText, Stroke, Vec2, ViewportBuilder
 };
 use game::Game;
 use rfd::MessageDialog;
@@ -98,7 +97,10 @@ impl LauncherApp {
             };
             exit(1);
         });
-        LauncherApp { config , app_shutdown: false }
+        LauncherApp {
+            config,
+            app_shutdown: false,
+        }
     }
 }
 
@@ -116,11 +118,11 @@ impl fmt::Display for Renderer {
 impl fmt::Display for ShadowMapSize {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ShadowMapSize::Size1536 => write!(f, "Shadow Map 1536"),
-            ShadowMapSize::Size2048 => write!(f, "Shadow Map 2048"),
-            ShadowMapSize::Size2560 => write!(f, "Shadow Map 2560"),
-            ShadowMapSize::Size3072 => write!(f, "Shadow Map 3072"),
-            ShadowMapSize::Size4096 => write!(f, "Shadow Map 4096"),
+            ShadowMapSize::Size1536 => write!(f, "1536"),
+            ShadowMapSize::Size2048 => write!(f, "2048"),
+            ShadowMapSize::Size2560 => write!(f, "2560"),
+            ShadowMapSize::Size3072 => write!(f, "3072"),
+            ShadowMapSize::Size4096 => write!(f, "4096"),
         }
     }
 }
@@ -136,32 +138,45 @@ impl eframe::App for LauncherApp {
 
             ui.horizontal(|ui| {
                 ui.vertical(|ui| {
+                    ui.style_mut().spacing.item_spacing = vec2(0., 40.);
+                    
                     ui.vertical(|ui| {
                         ui.style_mut().spacing.item_spacing = vec2(0., 0.);
-                        ui.label(RichText::new("S.T.A.L.K.E.R Anomaly").size(24.0));
+                        ui.label(RichText::new("Anomaly Launcher").size(24.0));
                         ui.horizontal(|ui| {
-                            ui.label("For S.T.A.L.K.E.R Anomaly 1.5.1 and above.");
+                            ui.label("Made by Konstantin Zhigaylo for stalkers.");
                         });
                     });
+                    
+            
                     ui.horizontal(|ui| {
+                        ui.style_mut().spacing.item_spacing = vec2(6., 6.);
+                        
                         ui.set_min_size(vec2(220., 100.));
                         ui.vertical(|ui| {
                             ui.set_min_size(vec2(150., 100.));
-                            ui.label(RichText::new("Graphics"));
-                            ui.radio_value(&mut self.config.renderer, Renderer::DX8, "DirectX 8");
-                            ui.radio_value(&mut self.config.renderer, Renderer::DX9, "DirectX 9");
-                            ui.radio_value(&mut self.config.renderer, Renderer::DX10, "DirectX 10");
-                            ui.radio_value(&mut self.config.renderer, Renderer::DX11, "DirectX 11");
+                            ui.label(RichText::new("Renderer"));
+                            ComboBox::from_id_source("renderer")
+                                .selected_text(self.config.renderer.to_string())
+                                .width(150.)
+                                .show_ui(ui, |ui| {
+                                    ui.style_mut().visuals.widgets.hovered.bg_stroke = Stroke::NONE;
+                                    ui.selectable_value(&mut self.config.renderer, Renderer::DX8, "DirectX 8");
+                                    ui.selectable_value(&mut self.config.renderer, Renderer::DX9, "DirectX 9");
+                                    ui.selectable_value(&mut self.config.renderer, Renderer::DX10, "DirectX 10");
+                                    ui.selectable_value(&mut self.config.renderer, Renderer::DX11, "DirectX 11");
+                                });
+                            ui.label(RichText::new("Shadow Map Size"));
                             ComboBox::from_id_source("shadow_map")
                                 .selected_text(self.config.shadow_map.to_string())
                                 .width(150.)
                                 .show_ui(ui, |ui| {
                                     ui.style_mut().visuals.widgets.hovered.bg_stroke = Stroke::NONE;
-                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size1536, "Shadow Map 1536");
-                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size2048, "Shadow Map 2048");
-                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size2560, "Shadow Map 2560");
-                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size3072, "Shadow Map 3072");
-                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size4096, "Shadow Map 4096");
+                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size1536, "1536");
+                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size2048, "2048");
+                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size2560, "2560");
+                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size3072, "3072");
+                                    ui.selectable_value(&mut self.config.shadow_map, ShadowMapSize::Size4096, "4096");
                                 });
                         });
                         ui.vertical(|ui| {
@@ -172,6 +187,7 @@ impl eframe::App for LauncherApp {
                             ui.checkbox(&mut self.config.use_avx, "Use AVX");
                         });
                     });
+                    
                 });
                 ui.vertical(|ui| {
                     let play_button = ui.add_sized([180., 65.], Button::new("Play"));
