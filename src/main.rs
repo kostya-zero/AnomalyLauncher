@@ -138,7 +138,7 @@ impl eframe::App for LauncherApp {
 
             ui.horizontal(|ui| {
                 ui.vertical(|ui| {
-                    ui.style_mut().spacing.item_spacing = vec2(0., 40.);
+                    ui.style_mut().spacing.item_spacing = vec2(0., 38.);
                     
                     ui.vertical(|ui| {
                         ui.style_mut().spacing.item_spacing = vec2(0., 0.);
