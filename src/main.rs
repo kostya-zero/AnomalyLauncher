@@ -13,7 +13,7 @@ mod styles;
 
 use app_config::{AppConfig, Renderer, ShadowMapSize};
 use eframe::egui::{
-    self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, Margin, RichText, Stroke, Vec2, ViewportBuilder
+    self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, RichText, Stroke, Vec2, ViewportBuilder
 };
 use game::Game;
 use rfd::MessageDialog;
