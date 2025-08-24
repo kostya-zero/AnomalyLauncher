@@ -35,10 +35,14 @@ fn main() -> eframe::Result<()> {
     }
 
     let mut fonts = FontDefinitions::default();
+    let open_sans = include_bytes!("../assets/open_sans.ttf");
+    let arc_font_data = Arc::new(FontData::from_static(open_sans));
+
     fonts.font_data.insert(
         "OpenSans".to_owned(),
-        FontData::from_static(include_bytes!("../assets/open_sans.ttf")),
+        arc_font_data,
     );
+
     fonts
         .families
         .get_mut(&FontFamily::Proportional)
@@ -76,7 +80,7 @@ fn main() -> eframe::Result<()> {
         },
         Box::new(|cc| {
             cc.egui_ctx.set_fonts(fonts);
-            Box::new(LauncherApp::new(cc))
+            Ok(Box::new(LauncherApp::new(cc)))
         }),
     )
 }
@@ -156,7 +160,7 @@ impl eframe::App for LauncherApp {
                         ui.vertical(|ui| {
                             ui.set_min_size(vec2(150., 100.));
                             ui.label(RichText::new("Renderer"));
-                            ComboBox::from_id_source("renderer")
+                            ComboBox::from_id_salt("renderer")
                                 .selected_text(self.config.renderer.to_string())
                                 .width(150.)
                                 .show_ui(ui, |ui| {
@@ -167,7 +171,7 @@ impl eframe::App for LauncherApp {
                                     ui.selectable_value(&mut self.config.renderer, Renderer::DX11, "DirectX 11");
                                 });
                             ui.label(RichText::new("Shadow Map Size"));
-                            ComboBox::from_id_source("shadow_map")
+                            ComboBox::from_id_salt("shadow_map")
                                 .selected_text(self.config.shadow_map.to_string())
                                 .width(150.)
                                 .show_ui(ui, |ui| {
