@@ -519,9 +519,9 @@ checksum = "d8b14ccef22fc6f5a8f4d7d768562a182c04ce9a3b3157b91390b52ddfdf1a76"
 
 [[package]]
 name = "ecolor"
-version = "0.32.0"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a631732d995184114016fab22fc7e3faf73d6841c2d7650395fe251fbcd9285"
+checksum = "ebb57dec02e4cca6d70d02e29865f7e52dbd471383f4c3444dda7ee78d467360"
 dependencies = [
  "bytemuck",
  "emath",
@@ -529,9 +529,9 @@ dependencies = [
 
 [[package]]
 name = "eframe"
-version = "0.32.0"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c790ccfbb3dd556588342463454b2b2b13909e5fdce5bc2a1432a8aa69c8b7a"
+checksum = "990e96866be6346eff496e4f450616f2a00e462742ad64d955454842dd7aa006"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -564,9 +564,9 @@ dependencies = [
 
 [[package]]
 name = "egui"
-version = "0.32.0"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8470210c95a42cc985d9ffebfd5067eea55bdb1c3f7611484907db9639675e28"
+checksum = "40df1115b8b0f3d4f1f9134a26287fd3d0e067fc18f879b8c9641aedf3eecef7"
 dependencies = [
  "ahash",
  "bitflags 2.9.1",
@@ -581,9 +581,9 @@ dependencies = [
 
 [[package]]
 name = "egui-winit"
-version = "0.32.0"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c490804a035cec9c826082894a3e1ecf4198accd3817deb10f7919108ebafab0"
+checksum = "1abd8326d2be6d0e945dcfe8acd2c07d64be4c977c5e1115f902dc9cd3ff7bf5"
 dependencies = [
  "ahash",
  "arboard",
@@ -600,9 +600,9 @@ dependencies = [
 
 [[package]]
 name = "egui_glow"
-version = "0.32.0"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d44f3fd4fdc5f960c9e9ef7327c26647edc3141abf96102980647129d49358e6"
+checksum = "7baca67871a8b808e2eb0849282f56149673b6842702306860916bf2dd83fca1"
 dependencies = [
  "ahash",
  "bytemuck",
@@ -623,36 +623,29 @@ checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
 
 [[package]]
 name = "emath"
-version = "0.32.0"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45f057b141e7e46340c321400be74b793543b1b213036f0f989c35d35957c32e"
+checksum = "b5c95b6d5571099bfa0ae9f4fdaef2c239bccb01d55339a082070259dc6f3b05"
 dependencies = [
  "bytemuck",
 ]
 
 [[package]]
 name = "epaint"
-version = "0.32.0"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94cca02195f0552c17cabdc02f39aa9ab6fbd815dac60ab1cd3d5b0aa6f9551c"
+checksum = "695fd7b458f31fe515d6a308f46b2936cae9316dc40c960a7ee31ce3a97866b9"
 dependencies = [
  "ab_glyph",
  "ahash",
  "bytemuck",
  "ecolor",
  "emath",
- "epaint_default_fonts",
  "log",
  "nohash-hasher",
  "parking_lot",
  "profiling",
 ]
-
-[[package]]
-name = "epaint_default_fonts"
-version = "0.32.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8495e11ed527dff39663b8c36b6c2b2799d7e4287fb90556e455d72eca0b4d3"
 
 [[package]]
 name = "equator"
@@ -709,6 +702,26 @@ dependencies = [
  "rayon-core",
  "smallvec",
  "zune-inflate",
+]
+
+[[package]]
+name = "fax"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f05de7d48f37cd6730705cbca900770cab77a89f413d23e100ad7fad7795a0ab"
+dependencies = [
+ "fax_derive",
+]
+
+[[package]]
+name = "fax_derive"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a0aca10fb742cb43f9e7bb8467c91aa9bcb8e3ffbc6a6f7389bb93ffc920577d"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -1022,9 +1035,9 @@ dependencies = [
 
 [[package]]
 name = "image"
-version = "0.25.6"
+version = "0.25.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db35664ce6b9810857a38a906215e75a9c879f0696556a39f59c62829710251a"
+checksum = "529feb3e6769d234375c4cf1ee2ce713682b8e76538cb13f9fc23e1400a591e7"
 dependencies = [
  "bytemuck",
  "byteorder-lite",
@@ -1032,6 +1045,7 @@ dependencies = [
  "exr",
  "gif",
  "image-webp",
+ "moxcms",
  "num-traits",
  "png",
  "qoi",
@@ -1120,12 +1134,6 @@ dependencies = [
  "getrandom 0.3.3",
  "libc",
 ]
-
-[[package]]
-name = "jpeg-decoder"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "00810f1d8b74be64b13dbf3db89ac67740615d6c891f0e7b6179326533011a07"
 
 [[package]]
 name = "js-sys"
@@ -1283,6 +1291,16 @@ checksum = "1fa76a2c86f704bdb222d66965fb3d63269ce38518b83cb0575fca855ebb6316"
 dependencies = [
  "adler2",
  "simd-adler32",
+]
+
+[[package]]
+name = "moxcms"
+version = "0.7.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ddd32fa8935aeadb8a8a6b6b351e40225570a37c43de67690383d87ef170cd08"
+dependencies = [
+ "num-traits",
+ "pxfm",
 ]
 
 [[package]]
@@ -1780,11 +1798,11 @@ checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 
 [[package]]
 name = "png"
-version = "0.17.16"
+version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82151a2fc869e011c153adc57cf2789ccb8d9906ce52c0b39a6b5697749d7526"
+checksum = "97baced388464909d42d89643fe4361939af9b7ce7a31ee32a168f832a70f2a0"
 dependencies = [
- "bitflags 1.3.2",
+ "bitflags 2.9.1",
  "crc32fast",
  "fdeflate",
  "flate2",
@@ -1858,6 +1876,15 @@ checksum = "52717f9a02b6965224f95ca2a81e2e0c5c43baacd28ca057577988930b6c3d5b"
 dependencies = [
  "quote",
  "syn",
+]
+
+[[package]]
+name = "pxfm"
+version = "0.1.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f55f4fedc84ed39cb7a489322318976425e42a147e2be79d8f878e2884f94e84"
+dependencies = [
+ "num-traits",
 ]
 
 [[package]]
@@ -2303,13 +2330,16 @@ dependencies = [
 
 [[package]]
 name = "tiff"
-version = "0.9.1"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba1310fcea54c6a9a4fd1aad794ecc02c31682f6bfbecdf460bf19533eed1e3e"
+checksum = "af9605de7fee8d9551863fd692cce7637f548dbd9db9180fcc07ccc6d26c336f"
 dependencies = [
+ "fax",
  "flate2",
- "jpeg-decoder",
+ "half",
+ "quick-error",
  "weezl",
+ "zune-jpeg",
 ]
 
 [[package]]
