@@ -36,20 +36,14 @@ fn load_icon_data() -> Result<IconData, image::ImageError> {
     Ok(IconData { rgba, width, height})
 }
 
-fn main() -> eframe::Result<()> {
-    if !Path::new("launcherconfig.toml").exists() {
-        let default_config = AppConfig::default();
-        let _ = default_config.write();
-    }
-
+fn load_fonts() -> FontDefinitions {
     let mut fonts = FontDefinitions::default();
     let open_sans = include_bytes!("../assets/open_sans.ttf");
     let arc_font_data = Arc::new(FontData::from_static(open_sans));
 
-    fonts.font_data.insert(
-        "OpenSans".to_owned(),
-        arc_font_data,
-    );
+    fonts
+        .font_data
+        .insert("OpenSans".to_owned(), arc_font_data);
 
     fonts
         .families
@@ -57,6 +51,14 @@ fn main() -> eframe::Result<()> {
         .unwrap()
         .insert(0, "OpenSans".to_owned());
 
+    fonts
+}
+
+fn main() -> eframe::Result<()> {
+    if !Path::new("launcherconfig.toml").exists() {
+        let default_config = AppConfig::default();
+        let _ = default_config.write();
+    }
 
     let icon_data = match  load_icon_data() {
         Ok(data) => Arc::new(data),
@@ -77,7 +79,6 @@ fn main() -> eframe::Result<()> {
             ..Default::default()
         },
         Box::new(|cc| {
-            cc.egui_ctx.set_fonts(fonts);
             Ok(Box::new(LauncherApp::new(cc)))
         }),
     )
@@ -90,7 +91,7 @@ struct LauncherApp {
 }
 
 impl LauncherApp {
-    fn new(_cc: &eframe::CreationContext<'_>) -> Self {
+    fn new(cc: &eframe::CreationContext<'_>) -> Self {
         let config = AppConfig::load().unwrap_or_else(|err| {
             match err {
                 app_config::AppConfigError::ReadFailed => show_error("Read Failed", "Failed to read the configuration file. Please remove 'launcherconfig.toml' and try to launch program again."),
@@ -99,6 +100,8 @@ impl LauncherApp {
             };
             exit(1);
         });
+
+        cc.egui_ctx.set_fonts(load_fonts());
         LauncherApp {
             config,
             app_shutdown: false,
