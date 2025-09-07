@@ -28,6 +28,14 @@ fn show_error(title: &str, desc: &str) {
         .show();
 }
 
+fn load_icon_data() -> Result<IconData, image::ImageError> {
+    let icon_data = include_bytes!("../assets/icon.ico");
+    let image = image::load_from_memory(icon_data)?.into_rgba8();
+    let (width, height) = image.dimensions();
+    let rgba = image.into_raw();
+    Ok(IconData { rgba, width, height})
+}
+
 fn main() -> eframe::Result<()> {
     if !Path::new("launcherconfig.toml").exists() {
         let default_config = AppConfig::default();
@@ -49,27 +57,17 @@ fn main() -> eframe::Result<()> {
         .unwrap()
         .insert(0, "OpenSans".to_owned());
 
-    let icon_data = include_bytes!("../assets/icon.ico");
 
-    let (icon_rgba, icon_width, icon_height) = {
-        let image = image::load_from_memory(icon_data)
-            .expect("Failed to open icon path")
-            .into_rgba8();
-        let (width, height) = image.dimensions();
-        let rgba = image.into_raw();
-        (rgba, width, height)
+    let icon_data = match  load_icon_data() {
+        Ok(data) => Arc::new(data),
+        Err(_) => {show_error("Icon Error", "Failed to load application icon."); exit(1);},
     };
-    let arc_icon = Arc::new(IconData {
-        rgba: icon_rgba,
-        width: icon_width,
-        height: icon_height,
-    });
 
     let viewport = ViewportBuilder::default()
         .with_maximize_button(false)
         .with_resizable(false)
         .with_inner_size(Vec2 { x: 510.0, y: 195.0 })
-        .with_icon(arc_icon);
+        .with_icon(icon_data);
 
     eframe::run_native(
         "Anomaly Launcher v1.0.0-rc1",
