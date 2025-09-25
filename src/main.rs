@@ -11,13 +11,14 @@ mod app_config;
 mod game;
 mod styles;
 
+use crate::game::launch_game;
 use app_config::{AppConfig, Renderer, ShadowMapSize};
 use eframe::egui::{
-    self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, RichText, Stroke, Vec2, ViewportBuilder
+    self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, RichText,
+    Stroke, Vec2, ViewportBuilder,
 };
 use rfd::MessageDialog;
 use styles::Styles;
-use crate::game::launch_game;
 
 fn show_error(title: &str, desc: &str) {
     MessageDialog::new()
@@ -33,7 +34,11 @@ fn load_icon_data() -> Result<IconData, image::ImageError> {
     let image = image::load_from_memory(icon_data)?.into_rgba8();
     let (width, height) = image.dimensions();
     let rgba = image.into_raw();
-    Ok(IconData { rgba, width, height})
+    Ok(IconData {
+        rgba,
+        width,
+        height,
+    })
 }
 
 fn load_fonts() -> FontDefinitions {
@@ -41,9 +46,7 @@ fn load_fonts() -> FontDefinitions {
     let open_sans = include_bytes!("../assets/open_sans.ttf");
     let arc_font_data = Arc::new(FontData::from_static(open_sans));
 
-    fonts
-        .font_data
-        .insert("OpenSans".to_owned(), arc_font_data);
+    fonts.font_data.insert("OpenSans".to_owned(), arc_font_data);
 
     fonts
         .families
@@ -60,9 +63,12 @@ fn main() -> eframe::Result<()> {
         let _ = default_config.write();
     }
 
-    let icon_data = match  load_icon_data() {
+    let icon_data = match load_icon_data() {
         Ok(data) => Arc::new(data),
-        Err(_) => {show_error("Icon Error", "Failed to load application icon."); exit(1);},
+        Err(_) => {
+            show_error("Icon Error", "Failed to load application icon.");
+            exit(1);
+        }
     };
 
     let viewport = ViewportBuilder::default()
@@ -78,9 +84,7 @@ fn main() -> eframe::Result<()> {
             vsync: false,
             ..Default::default()
         },
-        Box::new(|cc| {
-            Ok(Box::new(LauncherApp::new(cc)))
-        }),
+        Box::new(|cc| Ok(Box::new(LauncherApp::new(cc)))),
     )
 }
 
@@ -144,7 +148,7 @@ impl eframe::App for LauncherApp {
             ui.horizontal(|ui| {
                 ui.vertical(|ui| {
                     ui.style_mut().spacing.item_spacing = vec2(0., 38.);
-                    
+
                     ui.vertical(|ui| {
                         ui.style_mut().spacing.item_spacing = vec2(0., 0.);
                         ui.label(RichText::new("Anomaly Launcher").size(24.0));
@@ -152,11 +156,11 @@ impl eframe::App for LauncherApp {
                             ui.label("Made by Konstantin Zhigaylo for stalkers.");
                         });
                     });
-                    
-            
+
+
                     ui.horizontal(|ui| {
                         ui.style_mut().spacing.item_spacing = vec2(6., 6.);
-                        
+
                         ui.set_min_size(vec2(220., 100.));
                         ui.vertical(|ui| {
                             ui.set_min_size(vec2(150., 100.));
@@ -192,7 +196,6 @@ impl eframe::App for LauncherApp {
                             ui.checkbox(&mut self.config.use_avx, "Use AVX");
                         });
                     });
-                    
                 });
                 ui.vertical(|ui| {
                     let play_button = ui.add_sized([180., 65.], Button::new("Play"));
@@ -234,29 +237,29 @@ impl eframe::App for LauncherApp {
                         cache_path.push("appdata\\shaders_cache");
                         if !cache_path.exists() {
                             let _ = MessageDialog::new()
-                            .set_title("Path not found")
-                            .set_description("The launcher cannot find the shader cache folder. Make sure you run the launcher in the Anomaly game folder.")
-                            .set_level(rfd::MessageLevel::Error)
-                            .set_buttons(rfd::MessageButtons::Ok)
-                            .show();
+                                .set_title("Path not found")
+                                .set_description("The launcher cannot find the shader cache folder. Make sure you run the launcher in the Anomaly game folder.")
+                                .set_level(rfd::MessageLevel::Error)
+                                .set_buttons(rfd::MessageButtons::Ok)
+                                .show();
                         } else {
                             fs::remove_dir_all(cache_path.clone()).unwrap();
                             fs::create_dir(cache_path.clone()).unwrap();
                             MessageDialog::new()
-                            .set_title("Clear Shader Cache")
-                            .set_description("Shader cache has been deleted.")
-                            .set_level(rfd::MessageLevel::Info)
-                            .set_buttons(rfd::MessageButtons::Ok)
-                            .show();
+                                .set_title("Clear Shader Cache")
+                                .set_description("Shader cache has been deleted.")
+                                .set_level(rfd::MessageLevel::Info)
+                                .set_buttons(rfd::MessageButtons::Ok)
+                                .show();
                         }
                     }
 
                     if about_button.clicked() {
                         MessageDialog::new()
-                        .set_title("About Launcher")
-                        .set_buttons(rfd::MessageButtons::Ok)
-                        .set_level(rfd::MessageLevel::Info)
-                        .set_description(r#"Anomaly Launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above.
+                            .set_title("About Launcher")
+                            .set_buttons(rfd::MessageButtons::Ok)
+                            .set_level(rfd::MessageLevel::Info)
+                            .set_description(r#"Anomaly Launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above.
 
 Made by Konstantin "ZERO" Zhigaylo (@kostya_zero). 
 This software has open source code on GitHub.
@@ -278,7 +281,7 @@ https://github.com/kostya-zero/AnomalyLauncher"#).show();
 
         if self.app_shutdown {
             match self.config.write() {
-                Ok(_) => {},
+                Ok(_) => {}
                 Err(_) => show_error("Write Failed", "Failed to write data to configuration file. You might need to set your options again."),
             };
             exit(0);
