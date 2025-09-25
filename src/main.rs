@@ -15,9 +15,9 @@ use app_config::{AppConfig, Renderer, ShadowMapSize};
 use eframe::egui::{
     self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, RichText, Stroke, Vec2, ViewportBuilder
 };
-use game::Game;
 use rfd::MessageDialog;
 use styles::Styles;
+use crate::game::launch_game;
 
 fn show_error(title: &str, desc: &str) {
     MessageDialog::new()
@@ -96,7 +96,7 @@ impl LauncherApp {
             match err {
                 app_config::AppConfigError::ReadFailed => show_error("Read Failed", "Failed to read the configuration file. Please remove 'launcherconfig.toml' and try to launch program again."),
                 app_config::AppConfigError::BadStructure => show_error("Bad configuration", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
-                app_config::AppConfigError::WriteFailed => todo!(),
+                app_config::AppConfigError::WriteFailed => show_error("Write Failed", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
             };
             exit(1);
         });
@@ -200,8 +200,6 @@ impl eframe::App for LauncherApp {
                     let about_button = ui.add_sized([180., 35.], Button::new("About Launcher"));
                     let quit_button = ui.add_sized([180., 35.], Button::new("Quit"));
                     if play_button.clicked() {
-                        println!("{:?}", self);
-                        let game = Game::new(self.config.renderer, self.config.use_avx);
                         let mut args: Vec<String> = Vec::new();
                         let shadows_arg: String = match self.config.shadow_map {
                             ShadowMapSize::Size1536 => "-smap1536".to_string(),
@@ -218,26 +216,14 @@ impl eframe::App for LauncherApp {
                         if self.config.prefetch_sounds {
                             args.push("-prefetch_sounds".to_string());
                         }
-                        let launch_result = game.launch(args);
+                        let launch_result = launch_game(self.config.renderer, self.config.use_avx, args);
                         if let Err(e) = launch_result {
-                            match e {
-                                game::GameError::ExecutableNotFound => {
-                                    MessageDialog::new()
-                                        .set_title("Executable not found")
-                                        .set_description("Could not find the executable file of the game. Make sure you run the launcher from the game folder.")
-                                        .set_level(rfd::MessageLevel::Error)
-                                        .set_buttons(rfd::MessageButtons::Ok)
-                                        .show();
-                                },
-                                game::GameError::Unknown(i) => {
-                                    MessageDialog::new()
-                                        .set_title("Unknown error occured")
-                                        .set_description(format!("The launcher failed to launch the game due to an unexpected error: {}",i))
-                                        .set_level(rfd::MessageLevel::Error)
-                                        .set_buttons(rfd::MessageButtons::Ok)
-                                        .show();
-                                },
-                            }
+                            let _ = MessageDialog::new()
+                                .set_title("Launch Failed")
+                                .set_description(format!("Failed to launch Anomaly: {e}"))
+                                .set_level(rfd::MessageLevel::Error)
+                                .set_buttons(rfd::MessageButtons::Ok)
+                                .show();
                         } else {
                             self.app_shutdown = true;
                         }
@@ -246,7 +232,6 @@ impl eframe::App for LauncherApp {
                     if clear_button.clicked() {
                         let mut cache_path: PathBuf = env::current_dir().unwrap();
                         cache_path.push("appdata\\shaders_cache");
-                        println!("{:?}", cache_path);
                         if !cache_path.exists() {
                             let _ = MessageDialog::new()
                             .set_title("Path not found")
