@@ -221,12 +221,7 @@ impl eframe::App for LauncherApp {
                         }
                         let launch_result = launch_game(self.config.renderer, self.config.use_avx, args);
                         if let Err(e) = launch_result {
-                            let _ = MessageDialog::new()
-                                .set_title("Launch Failed")
-                                .set_description(format!("Failed to launch Anomaly: {e}"))
-                                .set_level(rfd::MessageLevel::Error)
-                                .set_buttons(rfd::MessageButtons::Ok)
-                                .show();
+                            show_error("Launch Failed", format!("Failed to launch Anomaly: {e}").as_str());
                         } else {
                             self.app_shutdown = true;
                         }
@@ -236,12 +231,7 @@ impl eframe::App for LauncherApp {
                         let mut cache_path: PathBuf = env::current_dir().unwrap();
                         cache_path.push("appdata\\shaders_cache");
                         if !cache_path.exists() {
-                            let _ = MessageDialog::new()
-                                .set_title("Path not found")
-                                .set_description("The launcher cannot find the shader cache folder. Make sure you run the launcher in the Anomaly game folder.")
-                                .set_level(rfd::MessageLevel::Error)
-                                .set_buttons(rfd::MessageButtons::Ok)
-                                .show();
+                            show_error("Path not found", "The launcher cannot find the shader cache folder. Make sure you run the launcher in the Anomaly game folder.")
                         } else {
                             fs::remove_dir_all(cache_path.clone()).unwrap();
                             fs::create_dir(cache_path.clone()).unwrap();
@@ -251,6 +241,7 @@ impl eframe::App for LauncherApp {
                                 .set_level(rfd::MessageLevel::Info)
                                 .set_buttons(rfd::MessageButtons::Ok)
                                 .show();
+
                         }
                     }
 
