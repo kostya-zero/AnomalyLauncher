@@ -15,10 +15,7 @@ mod styles;
 
 use crate::game::launch_game;
 use app_config::{AppConfig, Renderer, ShadowMapSize};
-use eframe::egui::{
-    self, vec2, Align, Button, ComboBox, FontData, FontDefinitions, FontFamily, FontId, IconData,
-    Layout, RichText, Stroke, TextStyle, Vec2, ViewportBuilder, ViewportId,
-};
+use eframe::egui::{self, vec2, Align, Button, ComboBox, FontData, FontDefinitions, FontFamily, FontId, IconData, Layout,  RichText, Stroke, Vec2, ViewportBuilder, ViewportId};
 use rfd::MessageDialog;
 use styles::Styles;
 
@@ -146,13 +143,15 @@ impl eframe::App for LauncherApp {
         let open = *self.open_about.borrow();
         let mut open_flag = self.open_about.borrow_mut();
         if open {
+            let  viewport = ViewportBuilder::default()
+                .with_title("About this Launcher")
+                .with_inner_size([350.0, 210.0])
+                .with_resizable(false);
+
             // FIXME: Replace with `show_viewport_deferred` in the future
             ctx.show_viewport_immediate(
                 ViewportId::from_hash_of("about_viewport"),
-                ViewportBuilder::default()
-                    .with_title("About this Launcher")
-                    .with_inner_size([350.0, 210.0])
-                    .with_resizable(false),
+                viewport,
                 |ctx, _| {
                     egui::CentralPanel::default().show(ctx, |ui| {
                         ui.with_layout(Layout::top_down(Align::Center), |ui| {
