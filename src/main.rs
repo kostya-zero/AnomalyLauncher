@@ -80,7 +80,7 @@ fn main() -> eframe::Result<()> {
         .with_icon(icon_data);
 
     eframe::run_native(
-        "Anomaly Launcher v1.0.0-rc1",
+        "Anomaly Launcher",
         eframe::NativeOptions {
             viewport,
             vsync: false,
@@ -146,6 +146,7 @@ impl eframe::App for LauncherApp {
         let open = *self.open_about.borrow();
         let mut open_flag = self.open_about.borrow_mut();
         if open {
+            // FIXME: Replace with `show_viewport_deferred` in the future
             ctx.show_viewport_immediate(
                 ViewportId::from_hash_of("about_viewport"),
                 ViewportBuilder::default()
