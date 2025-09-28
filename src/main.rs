@@ -1,5 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::cell::RefCell;
+use std::rc::Rc;
 use std::{
     env, fmt, fs,
     path::{Path, PathBuf},
@@ -14,8 +16,8 @@ mod styles;
 use crate::game::launch_game;
 use app_config::{AppConfig, Renderer, ShadowMapSize};
 use eframe::egui::{
-    self, vec2, Button, ComboBox, FontData, FontDefinitions, FontFamily, IconData, RichText,
-    Stroke, Vec2, ViewportBuilder,
+    self, vec2, Align, Button, ComboBox, FontData, FontDefinitions, FontFamily, FontId, IconData,
+    Layout, RichText, Stroke, TextStyle, Vec2, ViewportBuilder, ViewportId,
 };
 use rfd::MessageDialog;
 use styles::Styles;
@@ -82,6 +84,7 @@ fn main() -> eframe::Result<()> {
         eframe::NativeOptions {
             viewport,
             vsync: false,
+            centered: true,
             ..Default::default()
         },
         Box::new(|cc| Ok(Box::new(LauncherApp::new(cc)))),
@@ -92,6 +95,7 @@ fn main() -> eframe::Result<()> {
 struct LauncherApp {
     config: AppConfig,
     app_shutdown: bool,
+    open_about: Rc<RefCell<bool>>,
 }
 
 impl LauncherApp {
@@ -109,6 +113,7 @@ impl LauncherApp {
         LauncherApp {
             config,
             app_shutdown: false,
+            open_about: Rc::new(RefCell::new(false)),
         }
     }
 }
@@ -138,6 +143,55 @@ impl fmt::Display for ShadowMapSize {
 
 impl eframe::App for LauncherApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        let open = *self.open_about.borrow();
+        let mut open_flag = self.open_about.borrow_mut();
+        if open {
+            ctx.show_viewport_immediate(
+                ViewportId::from_hash_of("about_viewport"),
+                ViewportBuilder::default()
+                    .with_title("About this Launcher")
+                    .with_inner_size([350.0, 210.0])
+                    .with_resizable(false),
+                |ctx, _| {
+                    egui::CentralPanel::default().show(ctx, |ui| {
+                        ui.with_layout(Layout::top_down(Align::Center), |ui| {
+                            ui.label(
+                                RichText::new("Anomaly Launcher")
+                                    .font(FontId::proportional(24.0))
+                                    .strong(),
+                            );
+
+                            ui.label(
+                                RichText::new(format!("Version {}", env!("CARGO_PKG_VERSION")))
+                                    .font(FontId::proportional(14.0))
+                                    .weak(), // более тусклый цвет
+                            );
+
+                            ui.add_space(20.0);
+                            ui.label(
+                                RichText::new("Anomaly Launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above. Made by Konstantin \"ZERO\" Zhigaylo (@kostya_zero). This software has open source code on GitHub.")
+                                    .font(FontId::proportional(12.0))
+                            );
+                            ui.add_space(20.0);
+                            ui.separator();
+                            ui.add_space(12.0);
+
+                            ui.hyperlink_to(
+                                "View on GitHub",
+                                "https://github.com/kostya-zero/AnomalyLauncher",
+                            );
+
+                            ui.add_space(16.0);
+                        });
+                    });
+
+                    if ctx.input(|i| i.viewport().close_requested()) {
+                        *open_flag = false;
+                    }
+                },
+            );
+        }
+
         egui::CentralPanel::default().show(ctx, |ui| {
             if ui.visuals().dark_mode {
                 ui.style_mut().visuals = Styles::dark();
@@ -246,16 +300,7 @@ impl eframe::App for LauncherApp {
                     }
 
                     if about_button.clicked() {
-                        MessageDialog::new()
-                            .set_title("About Launcher")
-                            .set_buttons(rfd::MessageButtons::Ok)
-                            .set_level(rfd::MessageLevel::Info)
-                            .set_description(r#"Anomaly Launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above.
-
-Made by Konstantin "ZERO" Zhigaylo (@kostya_zero). 
-This software has open source code on GitHub.
-
-https://github.com/kostya-zero/AnomalyLauncher"#).show();
+                        *open_flag = true;
                     }
 
                     if quit_button.clicked() {

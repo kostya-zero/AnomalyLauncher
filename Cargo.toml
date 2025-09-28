@@ -12,6 +12,9 @@ image = "0.25.8"
 thiserror = "2.0.16"
 anyhow = "1.0.100"
 
+[profile.dev]
+debug = "full"
+
 [profile.release]
 opt-level = 3
 codegen-units = 1
