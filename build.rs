@@ -1,4 +1,9 @@
 fn main() {
+    // Prevent building on non-Windows machines.
+    if !cfg!(target_os = "windows") {
+        panic!("------\nAnomaly Launcher should be built only on Windows!\n------");
+    }
+
     let mut res = winresource::WindowsResource::new();
 
     res.set("FileVersion", "1.0.0.0")
