@@ -1,6 +1,5 @@
-use std::fs;
-
 use serde::{Deserialize, Serialize};
+use std::fs;
 
 #[derive(PartialEq, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Renderer {
@@ -48,22 +47,13 @@ impl Default for AppConfig {
 
 impl AppConfig {
     pub fn load() -> Result<Self, AppConfigError> {
-        if let Ok(file_data) = fs::read_to_string("launcherconfig.toml") {
-            if let Ok(config) = toml::from_str::<AppConfig>(&file_data) {
-                Ok(config)
-            } else {
-                Err(AppConfigError::BadStructure)
-            }
-        } else {
-            Err(AppConfigError::ReadFailed)
-        }
+        let content =
+            fs::read_to_string("launcherconfig.toml").map_err(|_| AppConfigError::ReadFailed)?;
+        toml::from_str(&content).map_err(|_| AppConfigError::BadStructure)
     }
 
     pub fn write(&self) -> Result<(), AppConfigError> {
         let string_config = toml::to_string(self).unwrap();
-        if fs::write("launcherconfig.toml", string_config).is_err() {
-            return Err(AppConfigError::WriteFailed);
-        }
-        Ok(())
+        fs::write("launcherconfig.toml", string_config).map_err(|_| AppConfigError::WriteFailed)
     }
 }
