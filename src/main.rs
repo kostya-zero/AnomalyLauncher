@@ -42,7 +42,7 @@ fn load_icon_data() -> Result<IconData, image::ImageError> {
 
 fn load_fonts() -> FontDefinitions {
     let mut fonts = FontDefinitions::default();
-    let open_sans = include_bytes!("../assets/open_sans.ttf");
+    let open_sans = include_bytes!("../assets/geist.ttf");
     let arc_font_data = Arc::new(FontData::from_static(open_sans));
 
     fonts.font_data.insert("OpenSans".to_owned(), arc_font_data);
@@ -164,7 +164,7 @@ impl eframe::App for LauncherApp {
                             ui.label(
                                 RichText::new(format!("Version {}", env!("CARGO_PKG_VERSION")))
                                     .font(FontId::proportional(14.0))
-                                    .weak(), // более тусклый цвет
+                                    .weak(),
                             );
 
                             ui.add_space(20.0);
@@ -207,7 +207,7 @@ impl eframe::App for LauncherApp {
                         ui.style_mut().spacing.item_spacing = vec2(0., 0.);
                         ui.label(RichText::new("Anomaly Launcher").size(24.0));
                         ui.horizontal(|ui| {
-                            ui.label("Made by Konstantin Zhigaylo for stalkers.");
+                            ui.label(RichText::new("Made by @kostya_zero for stalkers.").weak());
                         });
                     });
 
@@ -218,7 +218,7 @@ impl eframe::App for LauncherApp {
                         ui.set_min_size(vec2(220., 100.));
                         ui.vertical(|ui| {
                             ui.set_min_size(vec2(150., 100.));
-                            ui.label(RichText::new("Renderer"));
+                            ui.label(RichText::new("Renderer").size(15.));
                             ComboBox::from_id_salt("renderer")
                                 .selected_text(self.config.renderer.to_string())
                                 .width(150.)
