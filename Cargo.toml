@@ -1,6 +1,6 @@
 [package]
 name = "AnomalyLauncher"
-version = "1.0.0-rc2"
+version = "1.0.0-dev"
 edition = "2024"
 
 [dependencies]
