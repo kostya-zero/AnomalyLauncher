@@ -289,7 +289,7 @@ impl eframe::App for LauncherApp {
                     });
                 });
                 ui.vertical(|ui| {
-                    let play_button = ui.add_sized([180., 65.], Button::new("Play"));
+                    let play_button = ui.add_sized([180., 65.], Button::new(RichText::new("Play").bold().size(20.)));
                     let clear_button = ui.add_sized([180., 35.], Button::new("Clear Shader Cache"));
                     let about_button = ui.add_sized([180., 35.], Button::new("About Launcher"));
                     let quit_button = ui.add_sized([180., 35.], Button::new("Quit"));
