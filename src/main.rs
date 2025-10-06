@@ -9,15 +9,30 @@ use std::{
     sync::Arc,
 };
 
+use crate::game::launch_game;
+use app_config::{AppConfig, Renderer, ShadowMapSize};
+use eframe::egui::{
+    self, vec2, Align, Button, ComboBox, FontData, FontDefinitions, FontFamily, FontId, IconData,
+    Layout, RichText, Stroke, TextStyle, Vec2, ViewportBuilder, ViewportId,
+};
+use rfd::MessageDialog;
+use styles::Styles;
+
 mod app_config;
 mod game;
 mod styles;
 
-use crate::game::launch_game;
-use app_config::{AppConfig, Renderer, ShadowMapSize};
-use eframe::egui::{self, vec2, Align, Button, ComboBox, FontData, FontDefinitions, FontFamily, FontId, IconData, Layout,  RichText, Stroke, Vec2, ViewportBuilder, ViewportId};
-use rfd::MessageDialog;
-use styles::Styles;
+const GEIST_REGULAR: &[u8] = include_bytes!("../assets/geist_regular.otf");
+const GEIST_BOLD: &[u8] = include_bytes!("../assets/geist_bold.otf");
+static FONT_FAMILY_BOLD: &str = "bold";
+
+pub fn font_family_bold() -> FontFamily {
+    FontFamily::Name(Arc::from(FONT_FAMILY_BOLD))
+}
+
+pub fn font_id_heading() -> FontId {
+    FontId::new(24., font_family_bold())
+}
 
 fn show_error(title: &str, desc: &str) {
     MessageDialog::new()
@@ -42,18 +57,38 @@ fn load_icon_data() -> Result<IconData, image::ImageError> {
 
 fn load_fonts() -> FontDefinitions {
     let mut fonts = FontDefinitions::default();
-    let open_sans = include_bytes!("../assets/geist.ttf");
-    let arc_font_data = Arc::new(FontData::from_static(open_sans));
 
-    fonts.font_data.insert("OpenSans".to_owned(), arc_font_data);
+    fonts.font_data.insert(
+        "geist".to_string(),
+        FontData::from_static(GEIST_REGULAR).into(),
+    );
+
+    fonts.font_data.insert(
+        "geist-bold".to_string(),
+        FontData::from_static(GEIST_BOLD).into(),
+    );
+
+    {
+        let prop = fonts.families.get_mut(&FontFamily::Proportional).unwrap();
+        prop.insert(0, "geist".to_string());
+    }
 
     fonts
         .families
-        .get_mut(&FontFamily::Proportional)
-        .unwrap()
-        .insert(0, "OpenSans".to_owned());
+        .insert(font_family_bold(), vec!["geist-bold".to_string()]);
 
     fonts
+}
+
+// Trait to make TRUE BOLD text
+trait RichTextExt {
+    fn bold(self) -> Self;
+}
+
+impl RichTextExt for RichText {
+    fn bold(self) -> Self {
+        self.family(font_family_bold())
+    }
 }
 
 fn main() -> eframe::Result<()> {
@@ -106,7 +141,12 @@ impl LauncherApp {
             exit(1);
         });
 
+        // Configuring fonts
         cc.egui_ctx.set_fonts(load_fonts());
+        cc.egui_ctx.all_styles_mut(|style| {
+            *style.text_styles.get_mut(&TextStyle::Heading).unwrap() = font_id_heading()
+        });
+
         LauncherApp {
             config,
             app_shutdown: false,
@@ -143,9 +183,9 @@ impl eframe::App for LauncherApp {
         let open = *self.open_about.borrow();
         let mut open_flag = self.open_about.borrow_mut();
         if open {
-            let  viewport = ViewportBuilder::default()
+            let viewport = ViewportBuilder::default()
                 .with_title("About this Launcher")
-                .with_inner_size([350.0, 210.0])
+                .with_inner_size([350.0, 230.0])
                 .with_resizable(false);
 
             // FIXME: Replace with `show_viewport_deferred` in the future
@@ -157,8 +197,7 @@ impl eframe::App for LauncherApp {
                         ui.with_layout(Layout::top_down(Align::Center), |ui| {
                             ui.label(
                                 RichText::new("Anomaly Launcher")
-                                    .font(FontId::proportional(24.0))
-                                    .strong(),
+                                    .bold().size(24.),
                             );
 
                             ui.label(
@@ -205,10 +244,8 @@ impl eframe::App for LauncherApp {
 
                     ui.vertical(|ui| {
                         ui.style_mut().spacing.item_spacing = vec2(0., 0.);
-                        ui.label(RichText::new("Anomaly Launcher").size(24.0));
-                        ui.horizontal(|ui| {
+                        ui.label(RichText::new("Anomaly Launcher").bold().size(24.0));
                             ui.label(RichText::new("Made by @kostya_zero for stalkers.").weak());
-                        });
                     });
 
 
@@ -218,7 +255,7 @@ impl eframe::App for LauncherApp {
                         ui.set_min_size(vec2(220., 100.));
                         ui.vertical(|ui| {
                             ui.set_min_size(vec2(150., 100.));
-                            ui.label(RichText::new("Renderer").size(15.));
+                            ui.label(RichText::new("Renderer").bold().size(14.));
                             ComboBox::from_id_salt("renderer")
                                 .selected_text(self.config.renderer.to_string())
                                 .width(150.)
@@ -229,7 +266,7 @@ impl eframe::App for LauncherApp {
                                     ui.selectable_value(&mut self.config.renderer, Renderer::DX10, "DirectX 10");
                                     ui.selectable_value(&mut self.config.renderer, Renderer::DX11, "DirectX 11");
                                 });
-                            ui.label(RichText::new("Shadow Map Size"));
+                            ui.label(RichText::new("Shadow Map Size").bold().size(14.));
                             ComboBox::from_id_salt("shadow_map")
                                 .selected_text(self.config.shadow_map.to_string())
                                 .width(150.)
@@ -244,7 +281,7 @@ impl eframe::App for LauncherApp {
                         });
                         ui.vertical(|ui| {
                             ui.set_min_size(vec2(150., 100.));
-                            ui.label(RichText::new("Misc settings"));
+                            ui.label(RichText::new("Misc settings").bold().size(14.));
                             ui.checkbox(&mut self.config.debug, "Debug Mode");
                             ui.checkbox(&mut self.config.prefetch_sounds, "Prefetch Sounds");
                             ui.checkbox(&mut self.config.use_avx, "Use AVX");
@@ -318,7 +355,10 @@ impl eframe::App for LauncherApp {
         if self.app_shutdown {
             match self.config.write() {
                 Ok(_) => {}
-                Err(_) => show_error("Write Failed", "Failed to write data to configuration file. You might need to set your options again."),
+                Err(_) => show_error(
+                    "Write Failed",
+                    "Failed to write data to configuration file. You might need to set your options again.",
+                ),
             };
             exit(0);
         }
