@@ -1,9 +1,5 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::{
-    env, fmt, fs,
+    env, fs,
     path::{Path, PathBuf},
     process::exit,
     sync::Arc,
@@ -12,8 +8,8 @@ use std::{
 use crate::game::launch_game;
 use app_config::{AppConfig, Renderer, ShadowMapSize};
 use eframe::egui::{
-    self, vec2, Align, Button, ComboBox, FontData, FontDefinitions, FontFamily, FontId, IconData,
-    Layout, RichText, Stroke, TextStyle, Vec2, ViewportBuilder, ViewportId,
+    self, Align, Button, ComboBox, FontData, FontDefinitions, FontFamily, FontId, IconData, Layout,
+    RichText, Stroke, TextStyle, Vec2, ViewportBuilder, ViewportId, vec2,
 };
 use rfd::MessageDialog;
 use styles::Styles;
@@ -127,7 +123,7 @@ fn main() -> eframe::Result<()> {
 struct LauncherApp {
     config: AppConfig,
     app_shutdown: bool,
-    open_about: Rc<RefCell<bool>>,
+    open_about: bool,
 }
 
 impl LauncherApp {
@@ -141,7 +137,7 @@ impl LauncherApp {
             exit(1);
         });
 
-        // Configuring fonts
+        // Configure fonts
         cc.egui_ctx.set_fonts(load_fonts());
         cc.egui_ctx.all_styles_mut(|style| {
             *style.text_styles.get_mut(&TextStyle::Heading).unwrap() = font_id_heading()
@@ -150,87 +146,68 @@ impl LauncherApp {
         LauncherApp {
             config,
             app_shutdown: false,
-            open_about: Rc::new(RefCell::new(false)),
+            open_about: false,
         }
     }
 }
 
-impl fmt::Display for Renderer {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Renderer::DX8 => write!(f, "DirectX 8"),
-            Renderer::DX9 => write!(f, "DirectX 9"),
-            Renderer::DX10 => write!(f, "DirectX 10"),
-            Renderer::DX11 => write!(f, "DirectX 11"),
+impl LauncherApp {
+    pub fn render_about(&mut self, ctx: &egui::Context) {
+        if !self.open_about {
+            return;
         }
-    }
-}
 
-impl fmt::Display for ShadowMapSize {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ShadowMapSize::Size1536 => write!(f, "1536"),
-            ShadowMapSize::Size2048 => write!(f, "2048"),
-            ShadowMapSize::Size2560 => write!(f, "2560"),
-            ShadowMapSize::Size3072 => write!(f, "3072"),
-            ShadowMapSize::Size4096 => write!(f, "4096"),
-        }
+        let viewport = ViewportBuilder::default()
+            .with_title("About this Launcher")
+            .with_inner_size([350.0, 230.0])
+            .with_resizable(false);
+
+        ctx.show_viewport_immediate(
+            ViewportId::from_hash_of("about_viewport"),
+            viewport,
+            |ctx, _| {
+                egui::CentralPanel::default().show(ctx, |ui| {
+                    ui.with_layout(Layout::top_down(Align::Center), |ui| {
+                        ui.label(
+                            RichText::new("Anomaly Launcher")
+                                .bold().size(24.),
+                        );
+
+                        ui.label(
+                            RichText::new(format!("Version {}", env!("CARGO_PKG_VERSION")))
+                                .font(FontId::proportional(14.0))
+                                .weak(),
+                        );
+
+                        ui.add_space(20.0);
+                        ui.label(
+                            RichText::new("Anomaly Launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above. Made by Konstantin \"ZERO\" Zhigaylo (@kostya_zero). This software has open source code on GitHub.")
+                                .font(FontId::proportional(12.0))
+                        );
+                        ui.add_space(20.0);
+                        ui.separator();
+                        ui.add_space(12.0);
+
+                        ui.hyperlink_to(
+                            "View on GitHub",
+                            "https://github.com/kostya-zero/AnomalyLauncher",
+                        );
+
+                        ui.add_space(16.0);
+                    });
+                });
+
+                if ctx.input(|i| i.viewport().close_requested()) {
+                    self.open_about = false;
+                }
+            },
+        );
     }
 }
 
 impl eframe::App for LauncherApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let open = *self.open_about.borrow();
-        let mut open_flag = self.open_about.borrow_mut();
-        if open {
-            let viewport = ViewportBuilder::default()
-                .with_title("About this Launcher")
-                .with_inner_size([350.0, 230.0])
-                .with_resizable(false);
-
-            // FIXME: Replace with `show_viewport_deferred` in the future
-            ctx.show_viewport_immediate(
-                ViewportId::from_hash_of("about_viewport"),
-                viewport,
-                |ctx, _| {
-                    egui::CentralPanel::default().show(ctx, |ui| {
-                        ui.with_layout(Layout::top_down(Align::Center), |ui| {
-                            ui.label(
-                                RichText::new("Anomaly Launcher")
-                                    .bold().size(24.),
-                            );
-
-                            ui.label(
-                                RichText::new(format!("Version {}", env!("CARGO_PKG_VERSION")))
-                                    .font(FontId::proportional(14.0))
-                                    .weak(),
-                            );
-
-                            ui.add_space(20.0);
-                            ui.label(
-                                RichText::new("Anomaly Launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above. Made by Konstantin \"ZERO\" Zhigaylo (@kostya_zero). This software has open source code on GitHub.")
-                                    .font(FontId::proportional(12.0))
-                            );
-                            ui.add_space(20.0);
-                            ui.separator();
-                            ui.add_space(12.0);
-
-                            ui.hyperlink_to(
-                                "View on GitHub",
-                                "https://github.com/kostya-zero/AnomalyLauncher",
-                            );
-
-                            ui.add_space(16.0);
-                        });
-                    });
-
-                    if ctx.input(|i| i.viewport().close_requested()) {
-                        *open_flag = false;
-                    }
-                },
-            );
-        }
-
+        self.render_about(ctx);
         egui::CentralPanel::default().show(ctx, |ui| {
             if ui.visuals().dark_mode {
                 ui.style_mut().visuals = Styles::dark();
@@ -337,7 +314,7 @@ impl eframe::App for LauncherApp {
                     }
 
                     if about_button.clicked() {
-                        *open_flag = true;
+                        self.open_about = true;
                     }
 
                     if quit_button.clicked() {

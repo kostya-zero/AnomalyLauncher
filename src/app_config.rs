@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::fs;
+use std::{fmt, fs};
 
 #[derive(PartialEq, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Renderer {
@@ -9,6 +9,17 @@ pub enum Renderer {
     DX11,
 }
 
+impl From<Renderer> for String {
+    fn from(val: Renderer) -> Self {
+        match val {
+            Renderer::DX8 => "DirectX 8".to_string(),
+            Renderer::DX9 => "DirectX 9".to_string(),
+            Renderer::DX10 => "DirectX 10".to_string(),
+            Renderer::DX11 => "DirectX 11".to_string(),
+        }
+    }
+}
+
 #[derive(PartialEq, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum ShadowMapSize {
     Size1536,
@@ -16,6 +27,41 @@ pub enum ShadowMapSize {
     Size2560,
     Size3072,
     Size4096,
+}
+
+impl From<ShadowMapSize> for String {
+    fn from(val: ShadowMapSize) -> Self {
+        match val {
+            ShadowMapSize::Size1536 => "1536".to_string(),
+            ShadowMapSize::Size2048 => "2048".to_string(),
+            ShadowMapSize::Size2560 => "2560".to_string(),
+            ShadowMapSize::Size3072 => "3072".to_string(),
+            ShadowMapSize::Size4096 => "4096".to_string(),
+        }
+    }
+}
+
+impl fmt::Display for Renderer {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Renderer::DX8 => write!(f, "DirectX 8"),
+            Renderer::DX9 => write!(f, "DirectX 9"),
+            Renderer::DX10 => write!(f, "DirectX 10"),
+            Renderer::DX11 => write!(f, "DirectX 11"),
+        }
+    }
+}
+
+impl fmt::Display for ShadowMapSize {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ShadowMapSize::Size1536 => write!(f, "1536"),
+            ShadowMapSize::Size2048 => write!(f, "2048"),
+            ShadowMapSize::Size2560 => write!(f, "2560"),
+            ShadowMapSize::Size3072 => write!(f, "3072"),
+            ShadowMapSize::Size4096 => write!(f, "4096"),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]

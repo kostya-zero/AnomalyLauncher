@@ -24,7 +24,7 @@ pub fn launch_game(dx_level: Renderer, use_avx: bool, args: Vec<String>) -> Resu
     cmd.args(args);
     let result = cmd.spawn();
     if let Err(err) = result {
-        return Err(anyhow!("Unknown error occurred: {}", err.to_string()));
+        return Err(anyhow!("Unknown error occurred: {}", err));
     }
 
     Ok(())
