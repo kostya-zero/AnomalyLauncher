@@ -113,7 +113,6 @@ fn main() -> eframe::Result<()> {
         "Anomaly Launcher",
         eframe::NativeOptions {
             viewport,
-            vsync: false,
             centered: true,
             ..Default::default()
         },
@@ -208,9 +207,9 @@ impl LauncherApp {
 }
 
 impl eframe::App for LauncherApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        self.render_about(ctx);
-        egui::CentralPanel::default().show(ctx, |ui| {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        self.render_about(ui.ctx());
+        egui::CentralPanel::default().show(ui, |ui| {
             if ui.visuals().dark_mode {
                 ui.style_mut().visuals = Styles::dark();
             } else {
@@ -327,7 +326,7 @@ impl eframe::App for LauncherApp {
         });
 
         // Handle close via close button
-        if ctx.input(|i| i.viewport().close_requested()) {
+        if ui.input(|i| i.viewport().close_requested()) {
             self.app_shutdown = true;
         }
 
