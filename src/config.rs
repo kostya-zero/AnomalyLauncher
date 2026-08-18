@@ -73,7 +73,7 @@ pub struct Config {
     pub prefetch_sounds: bool,
 }
 
-pub enum AppConfigError {
+pub enum ConfigError {
     ReadFailed,
     BadStructure,
     WriteFailed,
@@ -92,14 +92,14 @@ impl Default for Config {
 }
 
 impl Config {
-    pub fn load() -> Result<Self, AppConfigError> {
+    pub fn load() -> Result<Self, ConfigError> {
         let content =
-            fs::read_to_string("launcherconfig.toml").map_err(|_| AppConfigError::ReadFailed)?;
-        toml::from_str(&content).map_err(|_| AppConfigError::BadStructure)
+            fs::read_to_string("launcherconfig.toml").map_err(|_| ConfigError::ReadFailed)?;
+        toml::from_str(&content).map_err(|_| ConfigError::BadStructure)
     }
 
-    pub fn write(&self) -> Result<(), AppConfigError> {
+    pub fn write(&self) -> Result<(), ConfigError> {
         let string_config = toml::to_string(self).unwrap();
-        fs::write("launcherconfig.toml", string_config).map_err(|_| AppConfigError::WriteFailed)
+        fs::write("launcherconfig.toml", string_config).map_err(|_| ConfigError::WriteFailed)
     }
 }

@@ -92,15 +92,18 @@ impl RichTextExt for RichText {
 fn main() -> eframe::Result<()> {
     if !Path::new("launcherconfig.toml").exists() {
         let default_config = Config::default();
-        let _ = default_config.write();
-    }
-
-    let icon_data = match load_icon_data() {
-        Ok(data) => Arc::new(data),
-        Err(_) => {
-            show_error("Icon Error", "Failed to load application icon.");
+        if default_config.write().is_err() {
+            show_error(
+                "Configuration Error",
+                "Failed to generated a default configuration. Looks like you don't have permission to write in this directory.",
+            );
             exit(1);
         }
+    }
+
+    let Ok(icon_data) = load_icon_data() else {
+        show_error("Icon Error", "Failed to load application icon.");
+        exit(1);
     };
 
     let viewport = ViewportBuilder::default()
@@ -131,9 +134,9 @@ impl LauncherApp {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
         let config = Config::load().unwrap_or_else(|err| {
             match err {
-                config::AppConfigError::ReadFailed => show_error("Read Failed", "Failed to read the configuration file. Please remove 'launcherconfig.toml' and try to launch program again."),
-                config::AppConfigError::BadStructure => show_error("Bad configuration", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
-                config::AppConfigError::WriteFailed => show_error("Write Failed", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
+                config::ConfigError::ReadFailed => show_error("Read Failed", "Failed to read the configuration file. Please remove 'launcherconfig.toml' and try to launch program again."),
+                config::ConfigError::BadStructure => show_error("Bad configuration", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
+                config::ConfigError::WriteFailed => show_error("Write Failed", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
             };
             exit(1);
         });
