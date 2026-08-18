@@ -8,7 +8,7 @@ use std::{
 };
 
 use crate::game::launch_game;
-use app_config::{AppConfig, Renderer, ShadowMapSize};
+use config::{Config, Renderer, ShadowMapSize};
 use eframe::egui::{
     self, Align, Button, ComboBox, FontData, FontDefinitions, FontFamily, FontId, IconData, Layout,
     RichText, Stroke, TextStyle, Vec2, ViewportBuilder, ViewportId, vec2,
@@ -16,7 +16,7 @@ use eframe::egui::{
 use rfd::MessageDialog;
 use styles::Styles;
 
-mod app_config;
+mod config;
 mod game;
 mod styles;
 
@@ -91,7 +91,7 @@ impl RichTextExt for RichText {
 
 fn main() -> eframe::Result<()> {
     if !Path::new("launcherconfig.toml").exists() {
-        let default_config = AppConfig::default();
+        let default_config = Config::default();
         let _ = default_config.write();
     }
 
@@ -122,18 +122,18 @@ fn main() -> eframe::Result<()> {
 
 #[derive(Debug)]
 struct LauncherApp {
-    config: AppConfig,
+    config: Config,
     app_shutdown: bool,
     open_about: bool,
 }
 
 impl LauncherApp {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        let config = AppConfig::load().unwrap_or_else(|err| {
+        let config = Config::load().unwrap_or_else(|err| {
             match err {
-                app_config::AppConfigError::ReadFailed => show_error("Read Failed", "Failed to read the configuration file. Please remove 'launcherconfig.toml' and try to launch program again."),
-                app_config::AppConfigError::BadStructure => show_error("Bad configuration", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
-                app_config::AppConfigError::WriteFailed => show_error("Write Failed", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
+                config::AppConfigError::ReadFailed => show_error("Read Failed", "Failed to read the configuration file. Please remove 'launcherconfig.toml' and try to launch program again."),
+                config::AppConfigError::BadStructure => show_error("Bad configuration", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
+                config::AppConfigError::WriteFailed => show_error("Write Failed", "Your configuration seems to be damaged. Please remove 'launcherconfig.toml' and try to launch program again."),
             };
             exit(1);
         });

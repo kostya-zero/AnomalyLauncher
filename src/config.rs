@@ -65,7 +65,7 @@ impl fmt::Display for ShadowMapSize {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]
-pub struct AppConfig {
+pub struct Config {
     pub renderer: Renderer,
     pub use_avx: bool,
     pub shadow_map: ShadowMapSize,
@@ -79,7 +79,7 @@ pub enum AppConfigError {
     WriteFailed,
 }
 
-impl Default for AppConfig {
+impl Default for Config {
     fn default() -> Self {
         Self {
             renderer: Renderer::DX10,
@@ -91,7 +91,7 @@ impl Default for AppConfig {
     }
 }
 
-impl AppConfig {
+impl Config {
     pub fn load() -> Result<Self, AppConfigError> {
         let content =
             fs::read_to_string("launcherconfig.toml").map_err(|_| AppConfigError::ReadFailed)?;
