@@ -4,7 +4,7 @@ use std::{env, process::Command};
 use crate::Renderer;
 
 pub fn launch_game(dx_level: Renderer, use_avx: bool, args: Vec<String>) -> Result<()> {
-    let mut cwd = env::current_dir().unwrap();
+    let mut cwd = env::current_exe().unwrap().parent().unwrap().to_path_buf();
     match (dx_level, use_avx) {
         (Renderer::DX8, false) => cwd.push("bin\\AnomalyDX8.exe"),
         (Renderer::DX8, true) => cwd.push("bin\\AnomalyDX8AVX.exe"),

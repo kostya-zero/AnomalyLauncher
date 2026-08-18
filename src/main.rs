@@ -1,11 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::{
-    env, fs,
-    path::{Path, PathBuf},
-    process::exit,
-    sync::Arc,
-};
+use std::{env, fs, path::Path, process::exit, sync::Arc};
 
 use crate::game::launch_game;
 use config::{Config, Renderer, ShadowMapSize};
@@ -300,7 +295,7 @@ impl eframe::App for LauncherApp {
                     }
 
                     if clear_button.clicked() {
-                        let mut cache_path: PathBuf = env::current_dir().unwrap();
+                        let mut cache_path = env::current_exe().unwrap().parent().unwrap().to_path_buf();
                         cache_path.push("appdata\\shaders_cache");
                         if !cache_path.exists() {
                             show_error("Path not found", "The launcher cannot find the shader cache folder. Make sure you run the launcher in the Anomaly game folder.")
