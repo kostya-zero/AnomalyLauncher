@@ -65,6 +65,7 @@ impl fmt::Display for ShadowMapSize {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+#[serde(default)]
 pub struct Config {
     pub renderer: Renderer,
     pub use_avx: bool,
