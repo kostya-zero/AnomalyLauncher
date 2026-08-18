@@ -6,11 +6,11 @@ edition = "2024"
 [dependencies]
 eframe = { version = "0.36.1", features = ["glow"], default-features = false }
 rfd = { version = "0.17.2", default-features = false }
-serde = { version = "1.0.226", features = ["derive"] }
-toml = "1.1.4+spec-1.1.0"
-image = "0.25.8"
-thiserror = "2.0.16"
-anyhow = "1.0.100"
+serde = { version = "1.0.229", features = ["derive"] }
+toml = "1.1.4"
+image = "0.25.10"
+thiserror = "2.0.20"
+anyhow = "1.0.104"
 
 [profile.release]
 opt-level = 3
@@ -23,4 +23,4 @@ debug = false
 debug = "line-tables-only"
 
 [build-dependencies]
-winresource = "0.1.23"
+winresource = "0.1.31"
