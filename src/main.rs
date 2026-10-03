@@ -180,16 +180,15 @@ impl LauncherApp {
 
                         ui.add_space(20.0);
                         ui.label(
-                            RichText::new("Anomaly Launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above. Made by Konstantin \"ZERO\" Zhigaylo (@kostya_zero). This software has open source code on GitHub.")
+                            RichText::new("Anomaly Launcher for S.T.A.L.K.E.R Anomaly 1.5.1 and above. Made by kostya-zero. This software has open source code on GitHub.")
                                 .font(FontId::proportional(12.0))
                         );
                         ui.add_space(20.0);
                         ui.separator();
                         ui.add_space(12.0);
-
-                        ui.hyperlink_to(
-                            "View on GitHub",
-                            "https://github.com/kostya-zero/AnomalyLauncher",
+                        ui.label(
+                            RichText::new("GitHub: https://github.com/kostya-zero/AnomalyLauncher")
+                                .font(FontId::proportional(12.0))
                         );
 
                         ui.add_space(16.0);
@@ -221,7 +220,7 @@ impl eframe::App for LauncherApp {
                     ui.vertical(|ui| {
                         ui.style_mut().spacing.item_spacing = vec2(0., 0.);
                         ui.label(RichText::new("Anomaly Launcher").bold().size(24.0));
-                            ui.label(RichText::new("Made by @kostya_zero for stalkers.").weak());
+                            ui.label(RichText::new("Made by ZERO for stalkers.").weak());
                     });
 
 
