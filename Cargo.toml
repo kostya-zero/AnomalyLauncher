@@ -8,7 +8,7 @@ eframe = { version = "0.37.0", features = ["glow"], default-features = false }
 rfd = { version = "0.18.0", default-features = false }
 serde = { version = "1.0.229", features = ["derive"] }
 toml = "1.2.1"
-image = "0.25.10"
+image = { version = "0.25.10", default-features = false, features = ["ico"] }
 thiserror = "2.0.21"
 anyhow = "1.0.104"
 
